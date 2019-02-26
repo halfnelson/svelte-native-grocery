@@ -1,0 +1,29 @@
+{
+    "nativescript": {
+        "id": "io.github.halfnelson.sveltenativetemplate",
+        "tns-ios": {
+            "version": "5.2.0"
+        },
+        "tns-android": {
+            "version": "5.2.0"
+        }
+    },
+    "main": "app.js",
+    "description": "Svelte/NativeScript Template Application",
+    "license": "SEE LICENSE IN <your-license-filename>",
+    "repository": "<fill-your-repository-here>",
+    "dependencies": {
+        "nativescript-theme-core": "~1.0.4",
+        "nativescript-ui-listview": "^5.2.0",
+        "svelte-native": "file:../svelte-native/dist",
+        "tns-core-modules": "^5.2.1"
+    },
+    "devDependencies": {
+        "nativescript-dev-typescript": "~0.8.0",
+        "nativescript-dev-webpack": "~0.20.0",
+        "svelte": "^3.0.0-beta.8",
+        "svelte-loader": "halfnelson/svelte-loader#fix-virtual-purge"
+    },
+    "gitHead": "59b6da006346fedb5bb201fcc9cd7d204a69a82f",
+    "readme": "NativeScript Application"
+}
