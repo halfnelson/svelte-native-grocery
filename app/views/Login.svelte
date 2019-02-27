@@ -4,8 +4,8 @@
     import { navigate } from "svelte-native"
     import List from "./List.svelte"
 
-    let email = "dpershouse@gmail.com"
-    let password = "Fred24"
+    let email = ""
+    let password = ""
     let isLoggingIn = true;
 
     let submit = () => { isLoggingIn ? doSignIn() : doRegister() }
