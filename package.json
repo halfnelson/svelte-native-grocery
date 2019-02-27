@@ -15,7 +15,7 @@
     "dependencies": {
         "nativescript-theme-core": "~1.0.4",
         "nativescript-ui-listview": "^5.2.0",
-        "svelte-native": "file:../svelte-native/dist",
+        "svelte-native": "^0.1.5",
         "tns-core-modules": "^5.2.1"
     },
     "devDependencies": {
