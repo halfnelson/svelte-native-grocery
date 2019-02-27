@@ -1,18 +1,26 @@
 <script>
-    import { AsComponent } from "svelte-native/components"
-    import { componentAsListItem } from "svelte-native/svelte-helpers"
+    import { Template } from "svelte-native/components"
+    import { ListViewViewTypes } from "nativescript-ui-listview"
     import { alert } from "tns-core-modules/ui/dialogs"
-    import { fetchItems, addItem } from "../shared/listService"
+    import { fetchItems, addItem, deleteItem } from "../shared/listService"
+    import { onMount } from "svelte"
 
     let itemTemplate;
+    let isLoading = false;
     let groceryList = [];
     let grocery = "";
     let groceryInput;
 
-    //load
-    fetchItems().then(items => groceryList = items);
+    onMount(() => {
+        //load
+        isLoading = true;
+        fetchItems().then(items => {
+            isLoading = false;
+            groceryList = items
+        });
+    });
 
-    const add = () => {
+    const doAdd = () => {
         if (grocery.trim() === "") {
             alert({
                 message: "Enter a grocery item",
@@ -33,11 +41,25 @@
     }
 
     let onSwipeCellStarted = (args) => {
-        debugger;
+        var swipeLimits = args.data.swipeLimits;
+        var swipeView = args.object;
+        var rightItem = swipeView.getViewById('delete-view');
+        swipeLimits.right = rightItem.getMeasuredWidth();
+        swipeLimits.left = 0;
+        swipeLimits.threshold = rightItem.getMeasuredWidth() / 2;
     }
 
-    let deleteItem = (args) => {
-        debugger;
+    let doDelete = (args) => {
+        var item = args.view.bindingContext;
+        if (groceryList.indexOf(item) < 0) return;
+        deleteItem(item).then(() => {
+            groceryList = groceryList.filter(i => i != item);
+        }).catch(() => {
+            alert({
+                message: "An error occurred while removing the item from your list.",
+                okButtonText: "OK"
+            });
+        });
     }
 </script>
 
@@ -48,23 +70,24 @@
         <gridLayout row="0" columns="*, auto" class="add-bar">
             <textField text="{ grocery }" on:textChange="{(e) => grocery = e.value}" bind:this="{groceryInput}"
                 hint="Enter a grocery item" col="0" />
-            <image src="~/images/add.png" on:tap="{add}" col="1" />
+            <image src="~/images/add.png" on:tap="{doAdd}" col="1" />
         </gridLayout>
-        <radListView items="{ groceryList }" row="1" use:componentAsListItem="{() => itemTemplate}"  on:itemSwipeProgressStarted="{onSwipeCellStarted}"
-                swipeActions="true">
-            <AsComponent bind:component={itemTemplate} let:item>
+        <radListView items="{ groceryList }" row="1" on:itemSwipeProgressStarted="{onSwipeCellStarted}"
+            swipeActions="true">
+            <Template type="{ListViewViewTypes.ItemView}" let:item>
                 <gridLayout class="grocery-list-item">
                     <label class="p-15" text="{ item.name }" />
                 </gridLayout>
-            </AsComponent>
-            <radListView.itemSwipeTemplate>
+            </Template>
+            <Template type="{ListViewViewTypes.ItemSwipeView}" let:item>
                 <gridLayout columns="*,auto" backgroundColor="red">
-                    <stackLayout id="delete-view" col="1" on:tap="{deleteItem}" class="delete-view">
+                    <stackLayout id="delete-view" col="1" on:tap="{doDelete}" class="delete-view">
                         <image src="~/images/delete.png" />
                     </stackLayout>
                 </gridLayout>
-            </radListView.itemSwipeTemplate>
+            </Template>
         </radListView>
+        <activityIndicator busy="{ isLoading }" row="1" horizontalAlignment="center" verticalAlignment="center" />
     </gridLayout>
 
 </page>
@@ -84,6 +107,15 @@
 
     .add-bar TextField {
         padding: 10;
+    }
+
+    .delete-view {
+        background-color: #CB1D00;
+        padding: 20;
+    }
+
+    .delete-view Image {
+        color: white;
     }
 
     Label {

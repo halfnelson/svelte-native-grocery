@@ -6,10 +6,10 @@ purpose of the file is to pass control to the app’s first module.
 
 import { svelteNative } from "svelte-native";
 import App from  "./views/Login.svelte";
-import { registerCustomElementNode, NativeElementNode } from "svelte-native/dom"
-import { RadListView } from "nativescript-ui-listview"
+import { registerElement } from "svelte-native/dom"
+import RadListViewElement from "./RadListViewElement"
 
-registerCustomElementNode('radListView', () => new NativeElementNode('listview', RadListView))
+registerElement('radListView', () => new RadListViewElement())
 
 svelteNative(App, {});
 

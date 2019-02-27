@@ -37,6 +37,14 @@ export const addItem = function(grocery) {
 }
 
 
+export const deleteItem = function(groceryItem) {
+    return fetch(baseUrl + "/" + groceryItem.id, {
+        method: "DELETE",
+        headers: getCommonHeaders()
+    })
+    .then(handleErrors)
+};
+
 function getCommonHeaders() {
     return {
         "Content-Type": "application/json",
