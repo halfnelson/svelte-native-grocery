@@ -8,6 +8,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const svelteNativePreprocessor = require('svelte-native-preprocessor');
 
 module.exports = env => {
     // Add your custom Activities, Services and other Android app components here.
@@ -100,7 +101,7 @@ module.exports = env => {
             "__dirname": false,
         },
         devtool: sourceMap ? "inline-source-map" : "none",
-        optimization:  {
+        optimization: {
             splitChunks: {
                 cacheGroups: {
                     vendor: {
@@ -109,7 +110,7 @@ module.exports = env => {
                         test: (module, chunks) => {
                             const moduleName = module.nameForCondition ? module.nameForCondition() : '';
                             return /[\\/]node_modules[\\/]/.test(moduleName) ||
-                                    appComponents.some(comp => comp === moduleName);
+                                appComponents.some(comp => comp === moduleName);
 
                         },
                         enforce: true,
@@ -170,7 +171,7 @@ module.exports = env => {
                     use: "nativescript-dev-webpack/markup-hot-loader"
                 },
 
-                { test: /\.(html|xml)$/, use: "nativescript-dev-webpack/xml-namespace-loader"},
+                { test: /\.(html|xml)$/, use: "nativescript-dev-webpack/xml-namespace-loader" },
 
                 {
                     test: /\.css$/,
@@ -198,7 +199,12 @@ module.exports = env => {
                 {
                     test: /\.svelte$/,
                     exclude: /node_modules/,
-                    use: 'svelte-loader'
+                    use: {
+                        loader: 'svelte-loader',
+                        options: {
+                            preprocess: svelteNativePreprocessor()
+                        }
+                    }
                 },
             ]
         },
@@ -209,14 +215,14 @@ module.exports = env => {
                 "process": undefined,
             }),
             // Remove all files from the out dir.
-            new CleanWebpackPlugin([ `${dist}/**/*` ]),
+            new CleanWebpackPlugin([`${dist}/**/*`]),
             // Copy native app resources to out dir.
             new CopyWebpackPlugin([
-              {
-                from: `${appResourcesFullPath}/${appResourcesPlatformDir}`,
-                to: `${dist}/App_Resources/${appResourcesPlatformDir}`,
-                context: projectRoot
-              },
+                {
+                    from: `${appResourcesFullPath}/${appResourcesPlatformDir}`,
+                    to: `${dist}/App_Resources/${appResourcesPlatformDir}`,
+                    context: projectRoot
+                },
             ]),
             // Copy assets to out dir. Add your own globs as needed.
             new CopyWebpackPlugin([

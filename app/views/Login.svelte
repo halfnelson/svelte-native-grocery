@@ -39,15 +39,14 @@
     }
 </script>
 
-<page xmlns="tns" actionBarHidden="{true}">
+<page actionBarHidden="{true}">
     <flexboxLayout>
         <stackLayout class="form { isLoggingIn ? '' : 'dark' }">
             <image src="~/images/logo.png" />
 
-            <textField hint="Email Address" text="{email}" on:textChange="{(e) => email = e.value}" keyboardType="email"
+            <textField hint="Email Address" bind:text="{email}" keyboardType="email"
                 autocorrect="false" autocapitalizationType="none" class="input input-border" />
-            <textField hint="Password" secure="true" text="{password}" on:textChange="{(e) => password = e.value}"
-                class="input input-border" />
+            <textField hint="Password" secure="true" bind:text="{password}" class="input input-border" />
 
             <button text="{ isLoggingIn ? 'Sign in' : 'Sign up' }" class="btn btn-primary" on:tap="{submit}" />
             <button text="{ isLoggingIn ? 'Sign up' : 'Back to login' }" on:tap="{toggleDisplay}" />

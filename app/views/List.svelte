@@ -4,18 +4,21 @@
     import { alert } from "tns-core-modules/ui/dialogs"
     import { fetchItems, addItem, deleteItem } from "../shared/listService"
     import { onMount } from "svelte"
+    import { fade } from 'svelte-native/transitions'
 
     let itemTemplate;
     let isLoading = false;
     let groceryList = [];
     let grocery = "";
     let groceryInput;
+    let listLoaded = false;
 
     onMount(() => {
         //load
         isLoading = true;
         fetchItems().then(items => {
             isLoading = false;
+            listLoaded = true;
             groceryList = items
         });
     });
@@ -64,16 +67,17 @@
 </script>
 
 
-<page xmlns="tns">
+<page>
     <actionBar title="Groceries"></actionBar>
     <gridLayout rows="auto, *">
         <gridLayout row="0" columns="*, auto" class="add-bar">
-            <textField text="{ grocery }" on:textChange="{(e) => grocery = e.value}" bind:this="{groceryInput}"
+            <textField bind:text="{grocery}" bind:this="{groceryInput}"
                 hint="Enter a grocery item" col="0" />
             <image src="~/images/add.png" on:tap="{doAdd}" col="1" />
         </gridLayout>
+        {#if listLoaded}
         <radListView items="{ groceryList }" row="1" on:itemSwipeProgressStarted="{onSwipeCellStarted}"
-            swipeActions="true">
+            swipeActions="true" transition:fade="{{duration: 1000 }}" >
             <Template type="{ListViewViewTypes.ItemView}" let:item>
                 <gridLayout class="grocery-list-item">
                     <label class="p-15" text="{ item.name }" />
@@ -87,6 +91,7 @@
                 </gridLayout>
             </Template>
         </radListView>
+        {/if}
         <activityIndicator busy="{ isLoading }" row="1" horizontalAlignment="center" verticalAlignment="center" />
     </gridLayout>
 
@@ -123,4 +128,6 @@
         border-bottom-width: 1;
         border-bottom-color: gray;
     }
+
+   
 </style>
