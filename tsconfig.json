@@ -1,19 +1,25 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es6",
+        "target": "es5",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "noEmitHelpers": true,
         "noEmitOnError": true,
+        "skipLibCheck": true,
         "lib": [
             "es6",
-            "dom"
+        ],
+        "types": [
+            "./node_modules/svelte/"
         ],
         "baseUrl": ".",
         "paths": {
             "~/*": [
                 "app/*"
+            ],
+            "*": [
+                "./node_modules/*"
             ]
         }
     },

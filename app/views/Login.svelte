@@ -8,34 +8,34 @@
     let password = ""
     let isLoggingIn = true;
 
-    let submit = () => { isLoggingIn ? doSignIn() : doRegister() }
+    const submit = () => { isLoggingIn ? doSignIn() : doRegister() }
 
-    let toggleDisplay = () => { isLoggingIn = !isLoggingIn }
+    const toggleDisplay = () => { isLoggingIn = !isLoggingIn }
 
-    let doSignIn = () => {
-        login(email, password)
-            .catch(function (error) {
-                console.log(error);
-                alert({
-                    message: "Unfortunately we could not find your account.",
-                    okButtonText: "OK"
-                });
-                return Promise.reject();
-            })
-            .then(function () {
-                navigate({ page: List });
+    const doSignIn = async () => {
+        try {
+            await login(email, password)
+        } catch (e) {
+            console.log(e);
+            await alert({
+                message: "Unfortunately we could not find your account.",
+                okButtonText: "OK"
             });
+            throw Error("login failed")
+        }
+        navigate({ page: List });
     }
-    let doRegister = () => {
-        register(email, password)
-            .then(function () {
-                alert("Your account was successfully created.")
-            }).catch(function (error) {
-                alert({
+
+    const doRegister = async () => {
+        try {
+            await register(email, password)
+            alert("Your account was successfully created.")
+        } catch (error) {
+            alert({
                     message: "Unfortunately we were unable to create your account.",
                     okButtonText: "OK"
-                });
             });
+        }
     }
 </script>
 
@@ -44,8 +44,8 @@
         <stackLayout class="form { isLoggingIn ? '' : 'dark' }">
             <image src="~/images/logo.png" />
 
-            <textField hint="Email Address" bind:text="{email}" keyboardType="email"
-                autocorrect="false" autocapitalizationType="none" class="input input-border" />
+            <textField hint="Email Address" bind:text="{email}" keyboardType="email" autocorrect="false"
+                autocapitalizationType="none" class="input input-border" />
             <textField hint="Password" secure="true" bind:text="{password}" class="input input-border" />
 
             <button text="{ isLoggingIn ? 'Sign in' : 'Sign up' }" class="btn btn-primary" on:tap="{submit}" />
@@ -81,6 +81,7 @@
 
     .btn-primary {
         background-color: #CB1D00;
+        color: white;
         margin-left: 0;
         margin-right: 0;
     }

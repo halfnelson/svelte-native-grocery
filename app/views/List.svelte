@@ -1,6 +1,6 @@
 <script>
     import { Template } from "svelte-native/components"
-    import { ListViewViewTypes } from "nativescript-ui-listview"
+    import { ListViewViewType } from "nativescript-ui-listview"
     import { alert } from "tns-core-modules/ui/dialogs"
     import { fetchItems, addItem, deleteItem } from "../shared/listService"
     import { onMount } from "svelte"
@@ -13,14 +13,21 @@
     let groceryInput;
     let listLoaded = false;
 
-    onMount(() => {
+    onMount(async () => {
         //load
         isLoading = true;
-        fetchItems().then(items => {
+        try {
+            let items = await fetchItems();
             isLoading = false;
             listLoaded = true;
             groceryList = items
-        });
+        } catch (error) {
+            console.log(error)
+            alert("There was an error fetching your items");
+            listLoaded = true;
+            isLoading = false;
+            groceryList = [];
+        }
     });
 
     const doAdd = () => {
@@ -32,15 +39,17 @@
             return;
         }
         groceryInput.nativeView.dismissSoftInput();
-        addItem(grocery)
-            .then(item => groceryList = [...groceryList, item])
-            .catch(() => {
-                alert({
-                    message: "An error occurred while adding an item to your list.",
-                    okButtonText: "OK"
-                });
+
+        try {
+            let item = addItem(grocery)
+            groceryList = [...groceryList, item]
+            grocery = "";
+        } catch (error) {
+            alert({
+                message: "An error occurred while adding an item to your list.",
+                okButtonText: "OK"
             });
-        grocery = "";
+        }
     }
 
     let onSwipeCellStarted = (args) => {
@@ -55,14 +64,15 @@
     let doDelete = (args) => {
         var item = args.view.bindingContext;
         if (groceryList.indexOf(item) < 0) return;
-        deleteItem(item).then(() => {
+        try {
+            deleteItem(item)
             groceryList = groceryList.filter(i => i != item);
-        }).catch(() => {
+        } catch (error) {
             alert({
                 message: "An error occurred while removing the item from your list.",
                 okButtonText: "OK"
             });
-        });
+        }
     }
 </script>
 
@@ -78,12 +88,12 @@
         {#if listLoaded}
         <radListView items="{ groceryList }" row="1" on:itemSwipeProgressStarted="{onSwipeCellStarted}"
             swipeActions="true" transition:fade="{{duration: 1000 }}" >
-            <Template type="{ListViewViewTypes.ItemView}" let:item>
+            <Template type="{ListViewViewType.ItemView}" let:item>
                 <gridLayout class="grocery-list-item">
                     <label class="p-15" text="{ item.name }" />
                 </gridLayout>
             </Template>
-            <Template type="{ListViewViewTypes.ItemSwipeView}" let:item>
+            <Template type="{ListViewViewType.ItemSwipeView}" let:item>
                 <gridLayout columns="*,auto" backgroundColor="red">
                     <stackLayout id="delete-view" col="1" on:tap="{doDelete}" class="delete-view">
                         <image src="~/images/delete.png" />
@@ -112,6 +122,9 @@
 
     .add-bar TextField {
         padding: 10;
+        color:white;
+        placeholder-color:#efefef;
+        border-color: white;
     }
 
     .delete-view {
