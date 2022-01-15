@@ -12,7 +12,7 @@
   "license": "SEE LICENSE IN <your-license-filename>",
   "repository": "<fill-your-repository-here>",
   "dependencies": {
-    "marked": "^0.7.0",
+    "marked": "^4.0.10",
     "nativescript-theme-core": "^2.0.23",
     "nativescript-ui-listview": "^7.1.0",
     "svelte-native-nativescript-ui": "^0.6.1",
